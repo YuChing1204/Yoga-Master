@@ -8,6 +8,7 @@ from numpy.linalg import norm
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics.pairwise import cosine_similarity
 
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
@@ -125,18 +126,18 @@ def pose_classification(video):
 
         except:
             pass
-
+        grade_text_color = (0,0,255)
         if (max(body_language_prob) > 0.9):
             cv2.putText(frame, "Pose Name: " + body_language_class
-                        , (90, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                        , (90, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, grade_text_color, 2, cv2.LINE_AA)
             if (body_language_class == "Adho Mukha Svanasana"):
                 grade = str(grade_downdog(frame, mp_pose, landmarks))
                 cv2.putText(frame, "Grade: " + grade
-                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, grade_text_color, 2, cv2.LINE_AA)
             elif (body_language_class == "Pincha Mayurasana"):
                 grade = str(grade_feathered(frame, mp_pose, landmarks))
                 cv2.putText(frame, "Grade: " + grade
-                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, grade_text_color, 2, cv2.LINE_AA)
 
         mp_drawing.draw_landmarks(
             frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
@@ -216,26 +217,35 @@ def grade_feathered(frame, mp_pose, landmarks):
     cosine = np.dot(standard, comparison) / (norm(standard) * norm(comparison))
     grade = round(cosine * 100, 2)
 
-    height, width = frame.shape[:2]
+    a = np.array(standard).reshape(1, -1)
+    b = np.array(comparison).reshape(1, -1)
 
+    # Compute cosine similarity
+    cos_sim = cosine_similarity(a, b)[0][0]
+
+    print(standard)
+    print(comparison)
+
+    height, width = frame.shape[:2]
+    angle_text_color = (0,255,0)
     cv2.putText(frame, str(round(angle3, 2)),
                 tuple(np.multiply(left_elbow, [width, height]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, angle_text_color, 1, cv2.LINE_AA
                 )
     cv2.putText(frame, str(round(angle4, 2)),
                 tuple(np.multiply(left_shoulder, [width, height]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, angle_text_color, 1, cv2.LINE_AA
                 )
     cv2.putText(frame, str(round(angle5, 2)),
                 tuple(np.multiply(left_knee, [width, height]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, angle_text_color, 1, cv2.LINE_AA
                 )
     cv2.putText(frame, str(round(angle6, 2)),
                 tuple(np.multiply(left_knee, [width, height]).astype(int)),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, angle_text_color, 1, cv2.LINE_AA
                 )
 
-    return grade
+    return (cos_sim - 0.99) * 100
 
 if __name__ == '__main__':
     # export_to_cvs()
