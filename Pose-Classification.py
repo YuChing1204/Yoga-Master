@@ -193,7 +193,7 @@ def grade_downdog(frame, mp_pose, landmarks):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
 
-    return grade
+    return max(0, (grade - 99) * 100)
 
 def grade_feathered(frame, mp_pose, landmarks):
     left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -245,7 +245,7 @@ def grade_feathered(frame, mp_pose, landmarks):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, angle_text_color, 1, cv2.LINE_AA
                 )
 
-    return (cos_sim - 0.99) * 100
+    return max(0, (grade - 99) * 100)
 
 if __name__ == '__main__':
     # export_to_cvs()
