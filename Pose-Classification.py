@@ -15,7 +15,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score # Accuracy metrics
 import pickle
 
-def export_to_cvs():
+def export_to_csv():
     directory = os.getcwd()
     path = directory + '/data'
     dir_list = os.listdir(path)
@@ -126,17 +126,17 @@ def pose_classification(video):
         except:
             pass
 
-        if (max(body_language_prob) > 0.9):
+        if (max(body_language_prob) >= 0.9):
             cv2.putText(frame, "Pose Name: " + body_language_class
-                        , (90, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            if (body_language_class == "Adho Mukha Svanasana"):
+                        , (90, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            if (body_language_class == "Down Dog"):
                 grade = str(grade_downdog(frame, mp_pose, landmarks))
                 cv2.putText(frame, "Grade: " + grade
-                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-            elif (body_language_class == "Pincha Mayurasana"):
+                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            elif (body_language_class == "Feathered Peacock"):
                 grade = str(grade_feathered(frame, mp_pose, landmarks))
                 cv2.putText(frame, "Grade: " + grade
-                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+                            , (90, 80), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
 
         mp_drawing.draw_landmarks(
             frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
@@ -219,7 +219,7 @@ def grade_downdog(frame, mp_pose, landmarks):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
 
-    return max((grade - 99) * 100)
+    return max(round((grade - 99) * 100, 2), 0)
 
 def grade_feathered(frame, mp_pose, landmarks):
     left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
@@ -295,10 +295,10 @@ def grade_feathered(frame, mp_pose, landmarks):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
 
-    return max((grade - 99) * 100)
+    return max(round((grade - 99) * 100, 2), 0)
 
 if __name__ == '__main__':
-    # export_to_cvs()
+    # export_to_csv()
     # train_model()
     video = 'downdog.mov'
     # video = 'video.mp4'
