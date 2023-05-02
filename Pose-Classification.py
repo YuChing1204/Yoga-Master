@@ -168,12 +168,27 @@ def grade_downdog(frame, mp_pose, landmarks):
     left_ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
                   landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
+    right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                     landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+    right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+    right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+    right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+    right_knee = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
+    right_ankle = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
+
+
     angle1 = calculate_angle(left_shoulder, left_elbow, left_wrist)
     angle2 = calculate_angle(left_hip, left_shoulder, left_elbow)
     angle3 = calculate_angle(left_hip, left_knee, left_ankle)
+    angle4 = calculate_angle(right_shoulder, right_elbow, right_wrist)
+    angle5 = calculate_angle(right_hip, right_shoulder, right_elbow)
+    angle6 = calculate_angle(right_hip, right_knee, right_ankle)
 
-    standard = [180, 180, 180]  # angle1, angle2, angle3
-    comparison = [angle1, angle2, angle3]
+    standard = [180, 180, 180, 180, 180, 180]  # angle1, angle2, angle3
+    comparison = [angle1, angle2, angle3, angle4, angle5, angle6]
 
     cosine = np.dot(standard, comparison) / (norm(standard) * norm(comparison))
     grade = round(cosine * 100, 2)
@@ -191,6 +206,18 @@ def grade_downdog(frame, mp_pose, landmarks):
                 tuple(np.multiply(left_knee, [width, height]).astype(int)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
+    cv2.putText(frame, str(round(angle4, 2)),
+                tuple(np.multiply(right_elbow, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+    cv2.putText(frame, str(round(angle5, 2)),
+                tuple(np.multiply(right_shoulder, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+    cv2.putText(frame, str(round(angle6, 2)),
+                tuple(np.multiply(right_knee, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
 
     return grade
 
@@ -206,13 +233,29 @@ def grade_feathered(frame, mp_pose, landmarks):
     left_ankle = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x,
                   landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
 
+    right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+                     landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+    right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+    right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+    right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+    right_knee = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
+    right_ankle = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x,
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
+
     angle3 = calculate_angle(left_hip, left_knee, left_ankle)
     angle4 = calculate_angle(left_wrist, left_elbow, left_shoulder)
     angle5 = calculate_angle(left_shoulder, left_hip, left_knee)
     angle6 = calculate_angle(left_elbow, left_shoulder, left_hip)
 
-    standard = [90, 180, 180, 180]  # angle3, angle4, angle5, angle6
-    comparison = [angle4, angle6, angle5, angle3]
+    angle33 = calculate_angle(right_hip, right_knee, right_ankle)
+    angle44 = calculate_angle(right_wrist, right_elbow, right_shoulder)
+    angle55 = calculate_angle(right_shoulder, right_hip, right_knee)
+    angle66 = calculate_angle(right_elbow, right_shoulder, right_hip)
+
+    standard = [90, 180, 180, 180, 90, 180, 180, 180]  # angle4, angle6, angle5, angle3
+    comparison = [angle4, angle6, angle5, angle3, angle44, angle66, angle55, angle33]
     cosine = np.dot(standard, comparison) / (norm(standard) * norm(comparison))
     grade = round(cosine * 100, 2)
 
@@ -227,11 +270,28 @@ def grade_feathered(frame, mp_pose, landmarks):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
     cv2.putText(frame, str(round(angle5, 2)),
-                tuple(np.multiply(left_knee, [width, height]).astype(int)),
+                tuple(np.multiply(left_hip, [width, height]).astype(int)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
     cv2.putText(frame, str(round(angle6, 2)),
                 tuple(np.multiply(left_knee, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+
+    cv2.putText(frame, str(round(angle33, 2)),
+                tuple(np.multiply(right_elbow, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+    cv2.putText(frame, str(round(angle44, 2)),
+                tuple(np.multiply(right_shoulder, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+    cv2.putText(frame, str(round(angle55, 2)),
+                tuple(np.multiply(right_hip, [width, height]).astype(int)),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
+                )
+    cv2.putText(frame, str(round(angle66, 2)),
+                tuple(np.multiply(right_knee, [width, height]).astype(int)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA
                 )
 
@@ -240,8 +300,8 @@ def grade_feathered(frame, mp_pose, landmarks):
 if __name__ == '__main__':
     # export_to_cvs()
     # train_model()
-    # video = 'downdog.mov'
+    video = 'downdog.mov'
     # video = 'video.mp4'
-    video = "feathered peacock.mov"
+    # video = "feathered peacock.mov"
     pose_classification(video)
 
